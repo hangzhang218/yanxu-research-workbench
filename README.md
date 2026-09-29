@@ -67,6 +67,8 @@ package-lock.json 固定本次使用的依赖版本；运行组件 v40.10.6，�
 
 大文件：当前文件选择限制 50 MB。更大数据、模型 checkpoint 需另行使用 Git LFS 或外部存储；不会因为记录快照就上传所有大型结果。
 
-测试：node --test test-storage.cjs test-git.cjs。Git 集成测试通过独立本地 bare 远端验证真实提交、精确文件选择、其他暂存内容保留、过期预览拒绝和非快进推送失败时保留提交。真实 GitHub 测试需有写入权限的目标仓库及用户认证。
+测试：node --test test-storage.cjs test-git.cjs。Git 集成测试通过独立本地 bare 远端验证真实提交、精确文件选择、其他暂存内容保留、过期预览拒绝和非快进推送失败时保留提交。
+
+2026-09-29 真实 GitHub 实测：通过 GitService 将指定文本文件与工作台记录推送到独立的私有测试仓库，远端提交匹配，重新克隆后的文件 SHA256 一致，测试仓库随后删除。开发环境不允许使用 Windows 凭据库或 DPAPI，本次测试通过 Git 的 GIT_ASKPASS 使用临时进程凭据；普通 Windows 下 GCM 首次登录和凭据保存尚未完成验证。详细结果随交付物中的测试报告保存。
 
 官方运行组件：[Git for Windows 2.56.0](https://github.com/git-for-windows/git/releases/tag/v2.56.0.windows.1)、[GCM 2.9.1](https://github.com/git-ecosystem/git-credential-manager/releases/tag/v2.9.1)。下载脚本校验官方发布的 SHA256，安装包保留组件随附许可证。认证参考：[GitHub 凭证说明](https://docs.github.com/en/get-started/git-basics/caching-your-github-credentials-in-git)。
