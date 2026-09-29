@@ -3,3 +3,4 @@ test-data/
 test-installed/
 build-cache/
 *.log
+git-runtime/

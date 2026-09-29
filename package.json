@@ -1,6 +1,6 @@
 {
   "name": "research-workbench",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "研序：可重复使用的个人科研工作台",
   "author": "Research Workbench",
   "main": "main.cjs",
@@ -23,9 +23,11 @@
       "main.cjs",
       "preload.cjs",
       "storage.cjs",
+      "git-service.cjs",
       "ui/**/*",
       "package.json"
     ],
+    "extraResources": [{ "from": "git-runtime", "to": "git", "filter": ["**/*"] }],
     "win": {
       "target": "nsis",
       "icon": "build/icon.ico",
