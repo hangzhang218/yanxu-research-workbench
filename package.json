@@ -1,0 +1,49 @@
+{
+  "name": "research-workbench",
+  "version": "0.1.0",
+  "description": "研序：可重复使用的个人科研工作台",
+  "author": "Research Workbench",
+  "main": "main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "package": "electron-builder --win nsis --x64"
+  },
+  "devDependencies": {
+    "electron": "^40.0.0",
+    "electron-builder": "^26.0.0"
+  },
+  "build": {
+    "appId": "org.researchworkbench.desktop",
+    "productName": "研序科研工作台",
+    "artifactName": "ResearchWorkbench-Setup-${version}.${ext}",
+    "directories": {
+      "output": "../../outputs"
+    },
+    "files": [
+      "main.cjs",
+      "preload.cjs",
+      "storage.cjs",
+      "ui/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "build/icon.ico",
+      "signExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "deleteAppDataOnUninstall": false,
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "installerLanguages": [
+        "zh_CN",
+        "en_US"
+      ]
+    }
+  }
+}
