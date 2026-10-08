@@ -8,7 +8,13 @@ function validate(data) {
     if (!p || typeof p.id !== 'string' || ids.has(p.id) || typeof p.name !== 'string' || !p.name.trim() || !Array.isArray(p.papers) || !Array.isArray(p.claims) || !Array.isArray(p.experiments) || !Array.isArray(p.versions) || !Array.isArray(p.candidates) || !Array.isArray(p.checks) || !p.problem || typeof p.problem !== 'object') throw new Error('项目记录格式无效。');
     ids.add(p.id);
     if(!Number.isInteger(p.stage)||p.stage<0||p.stage>2||!Array.isArray(p.rules)||p.rules.some(r=>typeof r!=='string')||!Number.isInteger(p.templateVersion)||p.templateVersion<1||p.checks.some(c=>typeof c!=='string'||! /^[012]-[0-5]$/.test(c)))throw new Error('项目阶段或流程模板格式无效。');
-    for (const list of [p.papers,p.claims,p.experiments,p.versions,p.candidates]) {
+    if(p.manuscripts!==undefined&&!Array.isArray(p.manuscripts))throw new Error('论文版本记录格式无效。');
+    if((p.manuscripts||[]).filter(item=>item.isFinal).length>1)throw new Error('每个项目只能指定一个最终论文版本。');
+    for(const item of p.manuscripts||[]){
+      if(typeof item.title!=='string'||!item.title.trim()||!item.file||typeof item.file.id!=='string'||!item.file.id.toLowerCase().endsWith('.pdf')||typeof item.file.name!=='string'||!item.file.name.trim())throw new Error('论文版本需要标题与稿件 PDF。');
+      if(item.sourceFile&&(!item.sourceFile.id||!item.sourceFile.name))throw new Error('论文源码附件格式无效。');
+    }
+    for (const list of [p.papers,p.claims,p.experiments,p.versions,p.candidates,p.manuscripts||[]]) {
       const entryIds = new Set();
       for (const item of list) { if (!item || typeof item.id !== 'string' || entryIds.has(item.id)) throw new Error('记录编号无效或重复。'); entryIds.add(item.id); }
     }
@@ -37,7 +43,7 @@ class Store {
     } finally { if(fs.existsSync(tmp)) fs.unlinkSync(tmp); }
   }
   attach(source) { const name=randomUUID()+path.extname(source).toLowerCase(); const stat=fs.statSync(source); if(stat.size>100*1024*1024) throw new Error('单个附件请控制在 100 MB 内。'); fs.copyFileSync(source,path.join(this.dir,'attachments',name)); return {id:name,name:path.basename(source)}; }
-  attachment(id) { if(typeof id!=='string'||id!==path.basename(id)||!/^[-a-z0-9]+\.[a-z0-9]+$/i.test(id)) throw new Error('附件编号无效。');if(!['.pdf','.txt','.md','.csv','.json','.png','.jpg','.jpeg','.svg','.log','.yaml','.yml','.drawio','.mmd','.puml','.pptx','.tex','.bib','.xlsx'].includes(path.extname(id).toLowerCase()))throw new Error('不支持打开这种附件类型。');const file=path.join(this.dir,'attachments',id); if(!fs.existsSync(file)) throw new Error('未找到附件。'); return file; }
+  attachment(id) { if(typeof id!=='string'||id!==path.basename(id)||!/^[-a-z0-9]+\.[a-z0-9]+$/i.test(id)) throw new Error('附件编号无效。');if(!['.pdf','.txt','.md','.csv','.json','.png','.jpg','.jpeg','.svg','.log','.yaml','.yml','.drawio','.mmd','.puml','.pptx','.tex','.bib','.xlsx','.docx','.zip'].includes(path.extname(id).toLowerCase()))throw new Error('不支持打开这种附件类型。');const file=path.join(this.dir,'attachments',id); if(!fs.existsSync(file)) throw new Error('未找到附件。'); return file; }
   export(folder,data) {
     validate(data); const out=path.join(folder,'研序备份-'+new Date().toISOString().replace(/[:.]/g,'-')); fs.mkdirSync(out,{recursive:true});
     fs.writeFileSync(path.join(out,'workspace.json'),JSON.stringify(data,null,2),'utf8'); const attachmentDir=path.join(out,'attachments');fs.mkdirSync(attachmentDir,{recursive:true});for(const name of fs.readdirSync(path.join(this.dir,'attachments')))fs.copyFileSync(path.join(this.dir,'attachments',name),path.join(attachmentDir,name));return out;

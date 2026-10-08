@@ -1,6 +1,6 @@
 {
   "name": "research-workbench",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "研序：可重复使用的个人科研工作台",
   "author": "Research Workbench",
   "main": "main.cjs",
